@@ -1,19 +1,20 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import datetime
+from datetime import datetime
+import pymysql
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql:/flask:flask@127.0.0.1:3306/movieweb'
-app.config['SQLALCHEMY_TRACK_MODIFICATTIONS'] = True
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://flask:flask@127.0.0.1:3306/movieweb"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
-db = SQLAlchemy
+db = SQLAlchemy(app)
 
 # 用户信息
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True)    # 用户名
-    pwd = db.Column(db.String(50))                  # 用户密码
+    name = db.Column(db.String(100), unique=True)    # 用户名
+    pwd = db.Column(db.String(100))                  # 用户密码
     email = db.Column(db.String(50), unique=True)   # 用户邮箱
     phone = db.Column(db.String(11), unique=True)   # 用户手机号码
     info = db.Column(db.Text)                       # 用户简介
@@ -124,6 +125,48 @@ class Role(db.Model):
     name = db.Column(db.String(100), unique=True)
     auths = db.Column(db.String(600))
     addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    admins = db.relationship('Admin', backref='role')
 
     def __repr__(self):
         return "<Auth %r>" % self.name
+
+# 管理员
+class Admin(db.Model):
+    __tablename__ = 'admin'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), unique=True)    # 用户名
+    pwd = db.Column(db.String(100))                  # 用户密码
+    is_super = db.Column(db.SmallInteger)           # 是否为超级管理员，0表示为超级管理员
+    role_id = db.Column(db.Integer, db.FetchedValue('role.id'))  # 所属角色
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow) # 添加时间
+    adminlogs = db.relationship('Adminlog', backref='admin')    # 管理员登录日志外键
+    adminlogs = db.relationship('Oplog', backref='admin')    # 操作日志外键
+
+    def __repr__(self):
+        return '<Admin %r>' % self.name
+
+# 管理员登录日志
+class Adminlog(db.Model):
+    __tablename__ = 'adminlog'
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
+    ip = db.Column(db.String(50))   # 登录ip
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<Adminlog %r>' % self.id
+
+# 操作日志
+class Oplog(db.Model):
+    __tablename__ = 'oplog'
+    id = db.Column(db.Integer, primary_key=True)
+    admin_id = db.Column(db.Integer, db.ForeignKey('admin.id'))
+    ip = db.Column(db.String(50))   # 登录ip
+    reason = db.Column(db.String(600)) # 操作原因
+    addtime = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+
+    def __repr__(self):
+        return '<Oplog %r>' % self.id
+
+if __name__ == '__main__':
+    db.create_all()
