@@ -73,7 +73,7 @@ a {
 }
 
 .top-nav {
-    padding: 12px 15px;
+    padding: 20px 15px;
     background: #888;
 }
 
@@ -98,4 +98,42 @@ a {
 .search-bar button {
     width: 20%;
     color: #111111;
+}
+
+.bottom-nav {
+    display: block;
+    background: #888;
+    height: 60px;
+}
+.bottom {
+    display: block;
+    padding: 20px 0px;
+    font-size: 14px;
+    text-align:center
+}
+.main-nav {
+    background: #fff;
+    padding: 10px 0px;
+    min-height: 600px;
+}
+.login-nav {
+    width: 50%;
+    background-color: aliceblue;
+    margin: 0px auto;
+    min-height: 100px;
+    position:relative;
+    top: 100px;
+    text-align: center;
+}
+.text {
+    display: block;
+    margin: 40px auto;
+}
+
+.item-login {
+    color: navy;
+}
+
+.item-login:hover {
+    color: aquamarine;
 }

@@ -17,15 +17,21 @@
                     <button>搜索</button>
             </div>
             <div class="fr">
-                <a class="item" href="#">登录</a>
+                <a class="item" href="{{ url_for('home.login') }}">登录</a>
                 <a class="item" href="#">注册</a>
-                <a class="item" href="#">退出</a>
+                <a class="item" href="{{ url_for('home.logout') }}">退出</a>
                 <a class="item" href="#">会员</a>
             </div>
         </div>
     </div>
+    <div class="main-nav container">
+        {% block content %}
+        {% endblock %}
+    </div>
     <div class="bottom-nav">
-
+        <div class="bottom">
+            Luckyxiang ©2018 微电影
+        </div>
     </div>
 </body>
 </html>
